@@ -1,0 +1,14 @@
+/Users/jason/Developer/pacer/gozer/zed-ext/target/wasm32-wasip1/debug/deps/serde-66d125988f752df6.d: /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/jason/Developer/pacer/gozer/zed-ext/target/wasm32-wasip1/debug/build/serde-30a4f439dfbb579f/out/private.rs
+
+/Users/jason/Developer/pacer/gozer/zed-ext/target/wasm32-wasip1/debug/deps/libserde-66d125988f752df6.rlib: /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/jason/Developer/pacer/gozer/zed-ext/target/wasm32-wasip1/debug/build/serde-30a4f439dfbb579f/out/private.rs
+
+/Users/jason/Developer/pacer/gozer/zed-ext/target/wasm32-wasip1/debug/deps/libserde-66d125988f752df6.rmeta: /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/jason/Developer/pacer/gozer/zed-ext/target/wasm32-wasip1/debug/build/serde-30a4f439dfbb579f/out/private.rs
+
+/Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs:
+/Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs:
+/Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs:
+/Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs:
+/Users/jason/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs:
+/Users/jason/Developer/pacer/gozer/zed-ext/target/wasm32-wasip1/debug/build/serde-30a4f439dfbb579f/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/jason/Developer/pacer/gozer/zed-ext/target/wasm32-wasip1/debug/build/serde-30a4f439dfbb579f/out

@@ -1,0 +1,4 @@
+name = "Go HTML Template"
+grammar = "gotmpl"
+path_suffixes = ["gohtml", "go.html", "html.tmpl"]
+tab_size = 2

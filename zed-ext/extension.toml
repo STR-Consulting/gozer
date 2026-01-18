@@ -1,0 +1,15 @@
+id = "go-template-lsp"
+name = "Go Template LSP"
+version = "0.1.0"
+schema_version = 1
+authors = ["Jason Staten <jstaten07@gmail.com>"]
+description = "Go template support with LSP (hover, diagnostics, go-to-definition)"
+repository = "https://github.com/pacer/gozer"
+
+[language_servers.go-template-lsp]
+name = "Go Template LSP"
+languages = ["Go Text Template", "Go HTML Template"]
+
+[grammars.gotmpl]
+repository = "https://github.com/ngalaiko/tree-sitter-go-template"
+rev = "5f19a36bb1eebb30454e277b222b278ceafed0dd"

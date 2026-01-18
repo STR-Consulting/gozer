@@ -1,0 +1,6 @@
+name = "Go Text Template"
+grammar = "gotmpl"
+path_suffixes = ["gotmpl", "go.tmpl", "gtpl", "tpl"]
+line_comments = ["{{/*"]
+tab_size = 4
+hard_tabs = true
