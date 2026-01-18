@@ -2,7 +2,7 @@ id = "go-template-lsp"
 name = "Go Template LSP"
 version = "0.3.1"
 schema_version = 1
-authors = ["Jason Abbott", "Jason Staten", "yayolande", "Nikita Galaiko", "Mahmud Ridwan"]
+authors = ["Jason Abbott", "yayolande", "Nikita Galaiko", "Mahmud Ridwan"]
 description = "Go template support with LSP (hover, diagnostics, go-to-definition)"
 repository = "https://github.com/STR-Consulting/gozer"
 
