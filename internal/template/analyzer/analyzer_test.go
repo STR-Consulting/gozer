@@ -214,7 +214,6 @@ func TestGetTypeOfDollarVariableWithinFile(t *testing.T) {
 
 			if err != nil && !datium.IsExpectingError ||
 				err == nil && datium.IsExpectingError {
-
 				t.Fatalf("mismatch between error expectation and reality\n"+
 					"-> err = %s\n-> isErrorExpected = %t",
 					err, datium.IsExpectingError,
@@ -255,7 +254,7 @@ func TestGetTypeOfDollarVariableWithinFile(t *testing.T) {
 				}
 
 				if info.Types == nil {
-					t.Fatalf("no type defintion found")
+					t.Fatalf("no type definition found")
 				}
 
 				datium.ExpectedType = info.Types[expr].Type
@@ -268,10 +267,8 @@ func TestGetTypeOfDollarVariableWithinFile(t *testing.T) {
 					typ, datium.ExpectedType,
 				)
 			}
-
 		})
 	}
-
 }
 
 // TODO: later on, add Range to the test suite
@@ -695,8 +692,8 @@ func TestMakeTypeInference(t *testing.T) {
 		testName := "testMakeTypeInference_" + strconv.Itoa(index)
 
 		t.Run(testName, func(t *testing.T) {
-			var symbols []*lexer.Token
-			var typs []types.Type
+			symbols := make([]*lexer.Token, 0, len(datium.Expression))
+			typs := make([]types.Type, 0, len(datium.Expression))
 
 			for _, field := range datium.Expression {
 				/*
@@ -743,8 +740,7 @@ func TestMakeTypeInference(t *testing.T) {
 			expectFirst := computeExpressionType(datium.Expect[0], t)
 			expectSecond := computeExpressionType(datium.Expect[1], t)
 
-			if !(types.Identical(inferedTypes[0], expectFirst) &&
-				types.Identical(inferedTypes[1], expectSecond)) {
+			if !types.Identical(inferedTypes[0], expectFirst) || !types.Identical(inferedTypes[1], expectSecond) {
 				t.Fatalf("type mismatch\n expected = %q\n got = %q", datium.Expect, inferedTypes)
 			}
 		})

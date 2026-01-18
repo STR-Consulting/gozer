@@ -3,8 +3,8 @@
 package analyzer
 
 import (
-	"log"
 	"errors"
+	"log"
 )
 
 type TypeKind int
@@ -15,26 +15,26 @@ type Type interface {
 
 const (
 	// TYPE_INT TypeKind
-	TYPE_INT string = "int"
-	TYPE_FLOAT = "float"
+	TYPE_INT   string = "int"
+	TYPE_FLOAT        = "float"
 	TYPE_BOOL
 	TYPE_CHAR
-	TYPE_STRING = "string"
-	TYPE_ANY = "any"
-	TYPE_ERROR = "error"
-	TYPE_VOID = "void"
-	TYPE_MAP = "map"
-	TYPE_ARRAY = "array"
-	TYPE_STRUCT = "struct"
+	TYPE_STRING  = "string"
+	TYPE_ANY     = "any"
+	TYPE_ERROR   = "error"
+	TYPE_VOID    = "void"
+	TYPE_MAP     = "map"
+	TYPE_ARRAY   = "array"
+	TYPE_STRUCT  = "struct"
 	TYPE_POINTER = "pointer"
-	TYPE_ALIAS = "alias"
+	TYPE_ALIAS   = "alias"
 	TYPE_INVALID = "invalid type"
 	// TYPE_IMPORTED = "coming from other package"
 )
 
 // int, float, string, bool, imported_type
 type AtomicType struct {
-	Type	TypeKind
+	Type TypeKind
 }
 
 func (a AtomicType) GetType() TypeKind {
@@ -42,14 +42,14 @@ func (a AtomicType) GetType() TypeKind {
 }
 
 type MapType struct {
-	Type	TypeKind
-	Key	Type
-	Val	Type
+	Type TypeKind
+	Key  Type
+	Val  Type
 }
 
 type StructType struct {
-	Type	TypeKind
-	Val	Type
+	Type TypeKind
+	Val  Type
 }
 
 func (s StructType) GetType() TypeKind {
@@ -57,13 +57,13 @@ func (s StructType) GetType() TypeKind {
 }
 
 type PointerType struct {
-	Type			TypeKind
-	Reference	Type
+	Type      TypeKind
+	Reference Type
 }
 
 type AliasType struct {
-	Type		TypeKind
-	Origin	TypeKind
+	Type   TypeKind
+	Origin TypeKind
 }
 
 func typeChecker(first, second any) (TypeKind, error) {
@@ -86,7 +86,7 @@ func typeChecker(first, second any) (TypeKind, error) {
 	case TYPE_MAP:
 		keyType, keyErr := typeChecker(first.Key, second.Key)
 		valType, valErr := typeChecker(first.Key, second.Key)
-		
+
 		if keyErr != nil {
 			return keyType, keyErr
 		} else if valErr != nil {
@@ -97,7 +97,7 @@ func typeChecker(first, second any) (TypeKind, error) {
 
 	case TYPE_ARRAY:
 		_, err := typeChecker(first.Val, second.Val)
-		
+
 		if err != nil {
 			return TYPE_INVALID, err
 		}

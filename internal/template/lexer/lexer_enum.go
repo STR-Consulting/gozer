@@ -27,7 +27,7 @@ const (
 	SPACE_EATER
 	EOL // End Of Line
 	EOF
-	// GROUP
+	// STATIC_GROUP represents a static group.
 	STATIC_GROUP
 	EXPANDABLE_GROUP
 	NOT_FOUND

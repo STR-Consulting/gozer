@@ -5,6 +5,7 @@ import (
 	"go/parser"
 	"go/token"
 	"go/types"
+	"maps"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,9 +18,9 @@ import (
 func ScanWorkspaceForFuncMap(rootPath string) (map[string]*FunctionDefinition, error) {
 	customFunctions := make(map[string]*FunctionDefinition)
 
-	err := filepath.Walk(rootPath, func(path string, info os.FileInfo, err error) error {
+	walkErr := filepath.Walk(rootPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			return nil // skip files we can't access
+			return nil //nolint:nilerr // intentionally skip files we can't access
 		}
 
 		// Skip directories we don't want to traverse
@@ -42,21 +43,19 @@ func ScanWorkspaceForFuncMap(rootPath string) (map[string]*FunctionDefinition, e
 			return nil
 		}
 
-		funcs, err := scanFileForFuncMap(path)
-		if err != nil {
+		funcs, scanErr := scanFileForFuncMap(path)
+		if scanErr != nil {
 			// Log but continue - don't fail on parse errors in user code
-			return nil
+			return nil //nolint:nilerr // intentionally ignore parse errors
 		}
 
-		for name, def := range funcs {
-			customFunctions[name] = def
-		}
+		maps.Copy(customFunctions, funcs)
 
 		return nil
 	})
 
-	if err != nil {
-		return customFunctions, err
+	if walkErr != nil {
+		return customFunctions, walkErr
 	}
 
 	return customFunctions, nil

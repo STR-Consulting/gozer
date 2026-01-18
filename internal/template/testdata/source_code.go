@@ -1,4 +1,3 @@
-
 // TODO: later on, move this file to 'testdata/analyzer' directory
 
 package gota
@@ -11,8 +10,8 @@ var atomicInt int = 23
 var atomicString string = "hello"
 var atomicBool bool = true
 
-var varFunction = func (int, bool) string { return "" }
-var varAnyFunction any = func (int, bool) string { return "" }
+var varFunction = func(int, bool) string { return "" }
+var varAnyFunction any = func(int, bool) string { return "" }
 var varStructSimple Ast
 var varStructWithMethods Person
 var varSliceSimple []int
@@ -27,8 +26,8 @@ var varAdvancedData *AdvancedData
 // TODO: map, slice, array, struct, channel, function, method, var
 
 type Ast struct {
-	Kind	int
-	Data	any
+	Kind int
+	Data any
 }
 
 type DeathAst Ast
@@ -39,8 +38,8 @@ func (c CopeAst) String() string {
 }
 
 type Person struct {
-	name	string
-	Age	int
+	name    string
+	Age     int
 	message chan string
 }
 
@@ -62,17 +61,16 @@ type EmbededInterface interface {
 }
 
 type MapStruct struct {
-	table		map[string]*int
+	table map[string]*int
 }
 
 type AdvancedData struct {
-	person		*Person
-	Counter		*int
-	Channel		chan string
-	EmbederFace	EmbededInterface
+	person      *Person
+	Counter     *int
+	Channel     chan string
+	EmbederFace EmbededInterface
 }
 
 func init() {
 	varInterfaceError.Error()
 }
-

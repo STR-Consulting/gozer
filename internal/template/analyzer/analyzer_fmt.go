@@ -24,7 +24,7 @@ func (v VariableDefinition) String() string {
 func (t nodeImplicitType) String() string {
 	children := ""
 	for _, child := range t.children {
-		children = children + fmt.Sprintf("%s,", child)
+		children += fmt.Sprintf("%s,", child)
 	}
 
 	if len(children) > 0 {

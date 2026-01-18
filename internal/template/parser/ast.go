@@ -6,8 +6,7 @@ import (
 	"github.com/pacer/gozer/internal/template/lexer"
 )
 
-// TODO: enhance the Stringer method for 'GroupStatementNode' and 'CommentNode'
-// Since new fields have been added
+// SymbolDefinition maps symbol names to AST nodes.
 type SymbolDefinition map[string]AstNode
 
 //go:generate go run ./generate.go
@@ -21,7 +20,7 @@ type AstNode interface {
 	SetError(err *ParseError)
 }
 
-// type Kind int
+// Kind represents the type of AST node.
 type Kind int
 
 type VariableDeclarationNode struct {
@@ -336,8 +335,7 @@ func (g GroupStatementNode) TemplateName() string {
 }
 
 func (g GroupStatementNode) IsTemplate() bool {
-
-	if IsGroupNode(g.kind) == false {
+	if !IsGroupNode(g.kind) {
 		return false
 	}
 
@@ -368,7 +366,7 @@ func (g GroupStatementNode) IsTemplate() bool {
 	return true
 }
 
-// WARNING: The name of this function is not accurate
+// IsGroupNode returns true if the kind is a group node type.
 func IsGroupNode(kind Kind) bool {
 	ok := false
 	ok = ok || kind == KIND_GROUP_STATEMENT
@@ -400,7 +398,6 @@ func (g GroupStatementNode) IsGroupWithNoVariableReset() bool {
 }
 
 func (g GroupStatementNode) IsGroupWithDotVariableReset() bool {
-
 	switch g.kind {
 	case KIND_RANGE_LOOP, KIND_WITH, KIND_ELSE_WITH:
 
@@ -451,7 +448,7 @@ func (c *CommentNode) SetError(err *ParseError) {
 	c.Err = err
 }
 
-// keyword involved: break, continue
+// SpecialCommandNode represents keywords like break and continue.
 type SpecialCommandNode struct {
 	kind   Kind
 	rng    lexer.Range

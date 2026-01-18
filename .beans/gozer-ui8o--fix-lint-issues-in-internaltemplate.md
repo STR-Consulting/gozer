@@ -1,10 +1,11 @@
 ---
 # gozer-ui8o
 title: Fix lint issues in internal/template
-status: todo
+status: completed
 type: task
+priority: normal
 created_at: 2026-01-18T21:47:26Z
-updated_at: 2026-01-18T21:47:26Z
+updated_at: 2026-01-18T22:01:24Z
 ---
 
 Fix 129 golangci-lint issues in vendored internal/template code (from gota).

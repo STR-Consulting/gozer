@@ -14,7 +14,7 @@ func TestScanWorkspaceForFuncMap(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	// Test file with template.FuncMap composite literal
 	testFile1 := `package main
@@ -30,7 +30,7 @@ var funcs = template.FuncMap{
 	"custom": func(s string) string { return s },
 }
 `
-	if err := os.WriteFile(filepath.Join(tmpDir, "funcs1.go"), []byte(testFile1), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(tmpDir, "funcs1.go"), []byte(testFile1), 0600); err != nil {
 		t.Fatalf("failed to write test file: %v", err)
 	}
 
@@ -46,7 +46,7 @@ var htmlFuncs = template.FuncMap{
 	"dict": func(values ...any) map[string]any { return nil },
 }
 `
-	if err := os.WriteFile(filepath.Join(tmpDir, "funcs2.go"), []byte(testFile2), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(tmpDir, "funcs2.go"), []byte(testFile2), 0600); err != nil {
 		t.Fatalf("failed to write test file: %v", err)
 	}
 
@@ -78,7 +78,7 @@ func TestScanWorkspaceForFuncMap_NoTemplateImport(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	// Test file without template import
 	testFile := `package main
@@ -89,7 +89,7 @@ func main() {
 	fmt.Println("hello")
 }
 `
-	if err := os.WriteFile(filepath.Join(tmpDir, "main.go"), []byte(testFile), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(tmpDir, "main.go"), []byte(testFile), 0600); err != nil {
 		t.Fatalf("failed to write test file: %v", err)
 	}
 
@@ -108,11 +108,11 @@ func TestScanWorkspaceForFuncMap_SkipsVendor(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	// Create vendor directory
 	vendorDir := filepath.Join(tmpDir, "vendor")
-	if err := os.Mkdir(vendorDir, 0755); err != nil {
+	if err := os.Mkdir(vendorDir, 0750); err != nil {
 		t.Fatalf("failed to create vendor dir: %v", err)
 	}
 
@@ -125,7 +125,7 @@ var funcs = template.FuncMap{
 	"vendorFunc": func() {},
 }
 `
-	if err := os.WriteFile(filepath.Join(vendorDir, "vendor.go"), []byte(testFile), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(vendorDir, "vendor.go"), []byte(testFile), 0600); err != nil {
 		t.Fatalf("failed to write test file: %v", err)
 	}
 
@@ -144,7 +144,7 @@ func TestScanWorkspaceForFuncMap_SkipsTestFiles(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	// Test file that is a test (should be skipped)
 	testFile := `package main
@@ -155,7 +155,7 @@ var funcs = template.FuncMap{
 	"testFunc": func() {},
 }
 `
-	if err := os.WriteFile(filepath.Join(tmpDir, "funcs_test.go"), []byte(testFile), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(tmpDir, "funcs_test.go"), []byte(testFile), 0600); err != nil {
 		t.Fatalf("failed to write test file: %v", err)
 	}
 
@@ -174,7 +174,7 @@ func TestScanWorkspaceForFuncMap_AliasedImport(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	// Test file with aliased import
 	testFile := `package main
@@ -187,7 +187,7 @@ var funcs = tmpl.FuncMap{
 	"aliased": func() {},
 }
 `
-	if err := os.WriteFile(filepath.Join(tmpDir, "aliased.go"), []byte(testFile), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(tmpDir, "aliased.go"), []byte(testFile), 0600); err != nil {
 		t.Fatalf("failed to write test file: %v", err)
 	}
 

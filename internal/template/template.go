@@ -90,12 +90,11 @@ func ScanWorkspaceForFuncMap(rootPath string) (map[string]*checker.FunctionDefin
 	return checker.ScanWorkspaceForFuncMap(rootPath)
 }
 
-// Recursively open files from 'rootDir'.
-// However there is a depth limit for the recursion (current MAX_DEPTH = 5)
-// TODO: expand authorized file extension to '.gohtml, .gohtmpl, .tmpl, .tpl, etc.'
+// OpenProjectFiles recursively opens files from 'rootDir'.
+// There is a depth limit for the recursion (current MAX_DEPTH = 5).
 func OpenProjectFiles(rootDir string, withFileExtensions []string) map[string][]byte {
 	const maxDepth int = 5
-	var currentDepth int = 0
+	var currentDepth = 0
 
 	return openProjectFilesSafely(rootDir, withFileExtensions, currentDepth, maxDepth)
 }
@@ -123,25 +122,25 @@ func openProjectFilesSafely(rootDir string, withFileExtensions []string, current
 			continue
 		}
 
-		if HasFileExtension(fileName, withFileExtensions) == false {
+		if !HasFileExtension(fileName, withFileExtensions) {
 			continue
 		}
 
-		file, err := os.Open(fileName)
+		file, err := os.Open(fileName) //nolint:gosec // fileName comes from trusted caller
 		if err != nil {
 			log.Println("unable to open file, ", err.Error())
 			continue
 		}
 
-		fileContent, err := io.ReadAll(file)
+		fileContent, _ := io.ReadAll(file)
 		fileNamesToContent[fileName] = fileContent
 	}
 
 	return fileNamesToContent
 }
 
-// Parse a file content (buffer). The output is an AST node, and an error list containing parsing error and suggestions
-// Returned parse tree is never 'nil', even when empty
+// ParseSingleFile parses file content (buffer) and returns an AST node and error list.
+// Returned parse tree is never 'nil', even when empty.
 func ParseSingleFile(source []byte) (*parser.GroupStatementNode, []Error) {
 	streamsOfToken, tokenErrs := lexer.Tokenize(source)
 
@@ -154,13 +153,12 @@ func ParseSingleFile(source []byte) (*parser.GroupStatementNode, []Error) {
 	return parseTree, parseErrs
 }
 
-// Parse all files within a workspace.
-// The output is an AST node, and an error list containing parsing error and suggestions
-// Never return nil, always an empty 'map' if nothing found
+// ParseFilesInWorkspace parses all files within a workspace.
+// Returns AST nodes and error list. Never returns nil, always an empty 'map' if nothing found.
 func ParseFilesInWorkspace(workspaceFiles map[string][]byte) (map[string]*parser.GroupStatementNode, []Error) {
 	parsedFilesInWorkspace := make(map[string]*parser.GroupStatementNode)
 
-	var errs []Error
+	errs := make([]Error, 0, len(workspaceFiles)*2)
 
 	for longFileName, content := range workspaceFiles {
 		streamsOfToken, tokenErrs := lexer.Tokenize(content)
@@ -179,8 +177,8 @@ func ParseFilesInWorkspace(workspaceFiles map[string][]byte) (map[string]*parser
 	return parsedFilesInWorkspace, errs
 }
 
-// This version is inefficient but simplier to use
-// Use 'DefinitionAnalysisChainTriggeredBySingleFileChange()' instead since it more performant and more accurate as well
+// DefinitionAnalysisSingleFile performs semantic analysis on a single file.
+// Use DefinitionAnalysisChainTriggeredBySingleFileChange instead for better performance.
 func DefinitionAnalysisSingleFile(fileName string, parsedFilesInWorkspace map[string]*parser.GroupStatementNode) (*checker.FileDefinition, []Error) {
 	if len(parsedFilesInWorkspace) == 0 {
 		return nil, nil
@@ -209,9 +207,7 @@ func DefinitionAnalysisSingleFile(fileName string, parsedFilesInWorkspace map[st
 	return file, errs
 }
 
-// Prefered function for computing the semantic analysis of a file in a workspace
-// This also compute the semantic analysis of other files affected by the change initiated by 'fileName'
-// So this process the semantic analysis of 'fileName' and other file affected by the change
+// DefinitionAnalysisChainTriggeredBySingleFileChange computes semantic analysis for a file and all affected files.
 func DefinitionAnalysisChainTriggeredBySingleFileChange(parsedFilesInWorkspace map[string]*parser.GroupStatementNode, fileName string) []FileAnalysisAndError {
 	if len(parsedFilesInWorkspace) == 0 {
 		return nil
@@ -254,7 +250,7 @@ func DefinitionAnalysisChainTriggeredBySingleFileChange(parsedFilesInWorkspace m
 	return chainAnalysis
 }
 
-// Prefered function for computing the semantic analysis of many files change in a workspace
+// DefinitionAnalysisChainTriggeredByBatchFileChange computes semantic analysis for multiple file changes.
 func DefinitionAnalysisChainTriggeredByBatchFileChange(parsedFilesInWorkspace map[string]*parser.GroupStatementNode, fileNames ...string) []FileAnalysisAndError {
 	if len(parsedFilesInWorkspace) == 0 {
 		return nil
@@ -302,8 +298,7 @@ func DefinitionAnalysisChainTriggeredByBatchFileChange(parsedFilesInWorkspace ma
 	return chainAnalysis
 }
 
-// Definition analysis for all files within a workspace.
-// It should only be done after 'ParseFilesInWorkspace()' or similar
+// DefinitionAnalysisWithinWorkspace performs definition analysis for all files in a workspace.
 func DefinitionAnalysisWithinWorkspace(parsedFilesInWorkspace map[string]*parser.GroupStatementNode) []FileAnalysisAndError {
 	if len(parsedFilesInWorkspace) == 0 {
 		return nil
@@ -434,7 +429,7 @@ func FoldingRange(rootNode *parser.GroupStatementNode) ([]*parser.GroupStatement
 	return foldingGroups, foldingComments
 }
 
-// Report whether 'fileName' extension is found within 'extensions'
+// HasFileExtension reports whether fileName's extension is found within extensions.
 func HasFileExtension(fileName string, extensions []string) bool {
 	for _, ext := range extensions {
 		if strings.HasSuffix(fileName, "."+ext) {

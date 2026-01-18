@@ -42,17 +42,7 @@ func (r Range) Contains(pos Position) bool {
 }
 
 func (r Range) IsEmpty() bool {
-	if r.Start.Line > 0 {
-		return false
-	} else if r.Start.Character > 0 {
-		return false
-	} else if r.End.Line > 0 {
-		return false
-	} else if r.End.Character > 0 {
-		return false
-	}
-
-	return true
+	return r.Start.Line == 0 && r.Start.Character == 0 && r.End.Line == 0 && r.End.Character == 0
 }
 
 func EmptyRange() Range {
@@ -295,7 +285,7 @@ func extractTemplateCode(content []byte) ([][]byte, []Range) {
 		content = content[loc[1]:]
 	}
 
-	if bytes.Equal(ORIGINAL_CONTENT, CLONED_CONTENT) == false {
+	if !bytes.Equal(ORIGINAL_CONTENT, CLONED_CONTENT) {
 		log.Printf("ORIGINAL_CONTENT = \n%q\n===================\ncontent = \n%q\n=============", ORIGINAL_CONTENT, CLONED_CONTENT)
 		panic("content of the file has changed during lexical analysis (extracting template)." +
 			"In a perfect world, it shouldn't change")
@@ -315,7 +305,6 @@ func ConvertSingleIndexToTextEditorPosition(buffer []byte, charIndex int) Positi
 		if buffer[i] == byte('\n') {
 			line++
 			col = 0
-
 		} else {
 			col++
 		}
@@ -326,7 +315,7 @@ func ConvertSingleIndexToTextEditorPosition(buffer []byte, charIndex int) Positi
 	return pos
 }
 
-// 'rangeIndex' is incluse at rangeIndex[0] but exclusive at rangeIndex[1] (eg. [a, b[)
+// 'rangeIndex' is includes at rangeIndex[0] but exclusive at rangeIndex[1] (eg. [a, b[)
 func convertRangeIndexToTextEditorPosition(editorContent []byte, rangeIndex []int, initialLine, initialColumn int) Range {
 	if rangeIndex[0] > rangeIndex[1] {
 		log.Printf("bad range formating.\n start = '%d' :: end = '%d'\n", rangeIndex[0], rangeIndex[1])
@@ -375,15 +364,15 @@ func tokenizeLine(data []byte, initialPosition Range) (*StreamToken, []Error) {
 	var reg *regexp.Regexp
 	var loc []int
 
-	var isCurrentTokenSeparatedFromPrevious bool = true
-	var isPreviousTokenAcceptBindingToken bool = true
+	var isCurrentTokenSeparatedFromPrevious = true
+	var isPreviousTokenAcceptBindingToken = true
 	var found bool
 
-	var lengthDataStart int = -1
+	var lengthDataStart = -1
 	var currentLocalLineNumber, currentLocalColumnNumber int
-	var indexFirstEqualOperator int = -1
+	var indexFirstEqualOperator = -1
 
-	var parenthesisUnclosed []*Token = make([]*Token, 0, 3)
+	var parenthesisUnclosed = make([]*Token, 0, 3)
 
 	currentLocalLineNumber = initialPosition.Start.Line
 	currentLocalColumnNumber = initialPosition.Start.Character
@@ -438,7 +427,7 @@ func tokenizeLine(data []byte, initialPosition Range) (*StreamToken, []Error) {
 
 				switch pattern.ID {
 				case COMMENT:
-					if isCommentAllowed == false {
+					if !isCommentAllowed {
 						err := errors.New("no white space or characters between 'comment' and '{{' or '}}'")
 						tokenHandler.appendError(err, token)
 					}
@@ -495,7 +484,7 @@ func tokenizeLine(data []byte, initialPosition Range) (*StreamToken, []Error) {
 
 			kindError := NOT_FOUND
 			if bytes.Equal(data[:loc[1]], []byte("{{")) || bytes.Equal(data[:loc[1]], []byte("}}")) {
-				err = errors.New("Missing matching template delimitator pair")
+				err = errors.New("missing matching template delimiter pair")
 				kindError = UNEXPECTED
 			}
 
@@ -511,8 +500,6 @@ func tokenizeLine(data []byte, initialPosition Range) (*StreamToken, []Error) {
 		tokenHandler.appendToken(UNEXPECTED, initialPosition, data)
 		token := tokenHandler.LastToken
 		tokenHandler.appendError(errors.New("unexpected character(s)"), token)
-
-		data = nil
 	}
 
 	if len(tokenHandler.Tokens) == 0 {
@@ -572,7 +559,7 @@ func handleExternalWhiteSpaceTrimmer(data []byte, pos Range) ([]byte, bool, [2]b
 				isRigthCommentAllowed = true
 			}
 		} else {
-			pos.Start.Character = pos.Start.Character - 1
+			pos.Start.Character--
 
 			err = &LexerError{
 				Err:   errors.New("'-' left operator cannot be next to non-white-space"),

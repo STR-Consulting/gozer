@@ -23,7 +23,7 @@ func main() {
 
 	// TODO: Make the tool works with proxy structure
 	// A proxy struct is a struct that contains all the property for which to produce
-	// the getter/setter, and which is embeded inside other struct for which the 
+	// the getter/setter, and which is embeded inside other struct for which the
 	// getter/setter method will be created on
 
 	fileName := "ast.go"
@@ -38,7 +38,7 @@ func main() {
 	interfaceName = "FacePal"
 
 	f := token.NewFileSet()
-	file, err := parser.ParseFile(f, fileName, nil, parser.SkipObjectResolution | parser.ParseComments)
+	file, err := parser.ParseFile(f, fileName, nil, parser.SkipObjectResolution|parser.ParseComments)
 	if err != nil {
 		panic("fatal error while parsing '" + fileName + "', " + err.Error())
 	}
@@ -59,7 +59,9 @@ func main() {
 
 				ast.Inspect(file, walker.verifyMethodExistance)
 
-				if walker.found { continue }
+				if walker.found {
+					continue
+				}
 
 				// 2. Generate the method string
 				methodCode := stringifyMethodImplementation(method, object)
@@ -72,13 +74,13 @@ func main() {
 				fileAndMethodAst, err := parser.ParseFile(token.NewFileSet(), "", src, parser.SkipObjectResolution)
 				if err != nil {
 					log.Println("error parsing expression, ", err.Error())
-					continue 
+					continue
 				}
 
 				// Insert method declaration into file ast tree
 				if len(fileAndMethodAst.Decls) == 0 {
 					log.Println("unexpected error, method not defined")
-					continue 
+					continue
 				}
 				methodAst := fileAndMethodAst.Decls[0]
 
@@ -105,7 +107,7 @@ func main() {
 	return
 }
 
-func insertMethodIntoFileAst(structName string, methodAst ast.Decl, file *ast.File, f *token.FileSet){
+func insertMethodIntoFileAst(structName string, methodAst ast.Decl, file *ast.File, f *token.FileSet) {
 	for indexDeclaration, decl := range file.Decls {
 		genDecl, ok := decl.(*ast.GenDecl)
 		if !ok {
@@ -141,9 +143,9 @@ func insertMethodIntoFileAst(structName string, methodAst ast.Decl, file *ast.Fi
 }
 
 type Walker struct {
-	wantedStructName	string
-	wantedMethodName	string
-	found	bool
+	wantedStructName string
+	wantedMethodName string
+	found            bool
 }
 
 func (w *Walker) Reset() {
@@ -168,7 +170,7 @@ func (w *Walker) verifyMethodExistance(node ast.Node) bool {
 
 		for _, field := range n.Recv.List {
 			typ := types.ExprString(field.Type)
-			
+
 			if strings.HasSuffix(w.wantedStructName, typ) ||
 				strings.HasSuffix(typ, w.wantedStructName) {
 				foundStructName = true
@@ -192,83 +194,83 @@ func (w *Walker) verifyMethodExistance(node ast.Node) bool {
 	return false
 }
 
-func stringifyMethodImplementation (method FunctionStructure, object StructStructure) string {
+func stringifyMethodImplementation(method FunctionStructure, object StructStructure) string {
 	methodName := strings.ToLower(method.Name)
-		
+
 	for _, field := range object.Fields {
 		fieldName := strings.ToLower(field.SymbolName)
 
-		if ! strings.HasSuffix(methodName, fieldName) {
+		if !strings.HasSuffix(methodName, fieldName) {
 			continue
 		}
 
 		src := "UNEXPECTED PREFIX !"
 		/*
-			src = "func (g {{.structName}}) {{.methodName}} " + 
-			"({{range .args}} {{.SymbolName}} {{.Type}}, {{end}}) " + 
-			" ({{range .returns}} {{.SymbolName}} {{.Type}}, {{end}}) {" + 
-			"return g.{{.property}}" + 
+			src = "func (g {{.structName}}) {{.methodName}} " +
+			"({{range .args}} {{.SymbolName}} {{.Type}}, {{end}}) " +
+			" ({{range .returns}} {{.SymbolName}} {{.Type}}, {{end}}) {" +
+			"return g.{{.property}}" +
 			"}"
 		*/
 
 		data := map[string]any{
 			"structInitial": strings.ToLower(object.Name)[:1],
-			"structName": object.Name,
-			"methodName": method.Name,
-			"args": method.Parameters,
-			"returns": method.Returns,
-			"property": field.SymbolName,
+			"structName":    object.Name,
+			"methodName":    method.Name,
+			"args":          method.Parameters,
+			"returns":       method.Returns,
+			"property":      field.SymbolName,
 		}
 
 		if strings.HasPrefix(methodName, "get") {
-			src = "func ({{.structInitial}} {{.structName}}) {{.methodName}} " + 
-			" () " + 
-			" ({{range .returns}} {{.SymbolName}} {{.Type}}, {{end}}) {" + 
-			" return {{.structInitial}}.{{.property}}" + 
-			"}"
+			src = "func ({{.structInitial}} {{.structName}}) {{.methodName}} " +
+				" () " +
+				" ({{range .returns}} {{.SymbolName}} {{.Type}}, {{end}}) {" +
+				" return {{.structInitial}}.{{.property}}" +
+				"}"
 
 			if len(method.Parameters) > 0 {
 				log.Println("error, getter only accept empty parameter",
-					object.Name + "." + field.SymbolName)
+					object.Name+"."+field.SymbolName)
 				continue
 			}
 
 			if len(method.Returns) > 1 {
 				log.Println("error, getter connot have more than one return value",
-					object.Name + "." + field.SymbolName)
+					object.Name+"."+field.SymbolName)
 				continue
 			} else if len(method.Returns) == 0 {
 				log.Println("error, getter cannot have empty return value",
-					object.Name + "." + field.SymbolName)
+					object.Name+"."+field.SymbolName)
 				continue
 			}
 
 			if method.Returns[0].Type != field.Type {
-				log.Println("error, getter return type should match the type of the structure field --", 
-					object.Name + "." + field.SymbolName)
+				log.Println("error, getter return type should match the type of the structure field --",
+					object.Name+"."+field.SymbolName)
 				continue
 			}
 
 		} else if strings.HasPrefix(methodName, "set") {
-			src = "func ({{.structInitial}} *{{.structName}}) {{.methodName}} " + 
-			"({{range .args}} {{.SymbolName}} {{.Type}}, {{end}}) " + 
-			" {" + 
-			" {{.structInitial}}.{{.property}} = {{ .setterValue }}" + 
-			"}"
+			src = "func ({{.structInitial}} *{{.structName}}) {{.methodName}} " +
+				"({{range .args}} {{.SymbolName}} {{.Type}}, {{end}}) " +
+				" {" +
+				" {{.structInitial}}.{{.property}} = {{ .setterValue }}" +
+				"}"
 
 			if len(method.Parameters) == 0 {
 				log.Println("error, setter method cannot have empty parameter list",
-					object.Name + "." + field.SymbolName)
+					object.Name+"."+field.SymbolName)
 				continue
 			} else if len(method.Parameters) > 1 {
 				log.Println("error, setter method cannot have more than 1 parameter",
-					object.Name + "." + field.SymbolName)
+					object.Name+"."+field.SymbolName)
 				continue
 			}
 
 			if method.Parameters[0].Type != field.Type {
 				log.Println("error, type mismatch for parameter and return value",
-					object.Name + "." + field.SymbolName)
+					object.Name+"."+field.SymbolName)
 				continue
 			}
 
@@ -277,7 +279,7 @@ func stringifyMethodImplementation (method FunctionStructure, object StructStruc
 
 		tmpl, err := template.New("method_declaration").Parse(src)
 		if err != nil {
-			log.Println("error while parsing template to render 'method_declaration'", 
+			log.Println("error while parsing template to render 'method_declaration'",
 				err.Error())
 			continue
 		}
@@ -299,8 +301,8 @@ func stringifyMethodImplementation (method FunctionStructure, object StructStruc
 }
 
 type StructStructure struct {
-	Name	string
-	Fields	[]Typing
+	Name   string
+	Fields []Typing
 }
 
 func extractStructuresFromAst(structureNameSuffix string, decls []ast.Decl) []StructStructure {
@@ -347,7 +349,7 @@ func extractStructuresFromAst(structureNameSuffix string, decls []ast.Decl) []St
 				if len(list.Names) == 0 {
 					typing := Typing{
 						SymbolName: typeString,
-						Type: typeString,
+						Type:       typeString,
 					}
 
 					variable.Fields = append(variable.Fields, typing)
@@ -357,7 +359,7 @@ func extractStructuresFromAst(structureNameSuffix string, decls []ast.Decl) []St
 				for _, ident := range list.Names {
 					typing := Typing{
 						SymbolName: ident.Name,
-						Type: typeString,
+						Type:       typeString,
 					}
 
 					variable.Fields = append(variable.Fields, typing)
@@ -372,19 +374,19 @@ func extractStructuresFromAst(structureNameSuffix string, decls []ast.Decl) []St
 }
 
 type Typing struct {
-	SymbolName	string
-	Type	string
+	SymbolName string
+	Type       string
 }
 
 type FunctionStructure struct {
-	Name	string
-	Parameters	[]Typing
-	Returns	[]Typing
+	Name       string
+	Parameters []Typing
+	Returns    []Typing
 }
 
 type InterfaceStructure struct {
-	Name	string
-	Methods	[]FunctionStructure
+	Name    string
+	Methods []FunctionStructure
 }
 
 func extractInterfacesFromAst(ifaceNameSuffix string, decls []ast.Decl) []InterfaceStructure {
@@ -410,7 +412,7 @@ func extractInterfacesFromAst(ifaceNameSuffix string, decls []ast.Decl) []Interf
 				continue
 			}
 
-			if ! strings.HasSuffix(typeSpec.Name.Name, ifaceNameSuffix) {
+			if !strings.HasSuffix(typeSpec.Name.Name, ifaceNameSuffix) {
 				continue
 			}
 
@@ -420,7 +422,7 @@ func extractInterfacesFromAst(ifaceNameSuffix string, decls []ast.Decl) []Interf
 			}
 
 			inface := InterfaceStructure{
-				Name: typeSpec.Name.Name,
+				Name:    typeSpec.Name.Name,
 				Methods: []FunctionStructure{},
 			}
 
@@ -439,9 +441,9 @@ func extractInterfacesFromAst(ifaceNameSuffix string, decls []ast.Decl) []Interf
 					typeName := types.ExprString(param.Type)
 
 					for _, name := range param.Names {
-						typing := Typing {
+						typing := Typing{
 							SymbolName: name.Name,
-							Type: typeName,
+							Type:       typeName,
 						}
 
 						infaceFunc.Parameters = append(infaceFunc.Parameters, typing)
@@ -450,7 +452,7 @@ func extractInterfacesFromAst(ifaceNameSuffix string, decls []ast.Decl) []Interf
 					if len(param.Names) == 0 {
 						typing := Typing{
 							SymbolName: "val" + strconv.Itoa(idx),
-							Type: typeName,
+							Type:       typeName,
 						}
 
 						infaceFunc.Parameters = append(infaceFunc.Parameters, typing)
@@ -462,7 +464,7 @@ func extractInterfacesFromAst(ifaceNameSuffix string, decls []ast.Decl) []Interf
 					for _, ret := range funcType.Results.List {
 						typeName := types.ExprString(ret.Type)
 
-						typing := Typing {
+						typing := Typing{
 							Type: typeName,
 						}
 

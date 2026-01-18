@@ -1,7 +1,6 @@
-// Package lsp provides Language Server Protocol message encoding and decoding.
-//
-// Based on https://github.com/yayolande/go-template-lsp (MIT License)
 package lsp
+
+// Based on https://github.com/yayolande/go-template-lsp (MIT License)
 
 import (
 	"bufio"

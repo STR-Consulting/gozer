@@ -5,7 +5,7 @@ package lsp
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"log/slog"
 	"strconv"
 	"sync"
@@ -29,7 +29,7 @@ func (id *ID) UnmarshalJSON(data []byte) error {
 
 	number, err := strconv.Atoi(string(data))
 	if err != nil {
-		return fmt.Errorf("'ID' expected either a string or an integer")
+		return errors.New("'ID' expected either a string or an integer")
 	}
 
 	*id = ID(number)
@@ -425,7 +425,7 @@ func ProcessHoverRequest(data []byte, openFiles map[string]*analyzer.FileDefinit
 
 	type HoverResult struct {
 		Contents MarkupContent `json:"contents"`
-		Range    Range         `json:"range,omitempty"`
+		Range    Range         `json:"range,omitzero"`
 	}
 
 	response := ResponseMessage[*HoverResult]{
@@ -508,7 +508,7 @@ func ProcessGoToDefinition(data []byte, openFiles map[string]*analyzer.FileDefin
 	res.Id = req.Id
 	res.JsonRpc = req.JsonRpc
 
-	for index := range len(fileNames) {
+	for index := range fileNames {
 		fileName = fileNames[index]
 		targetFileNameURI := fileNames[index]
 		reach := reaches[index]

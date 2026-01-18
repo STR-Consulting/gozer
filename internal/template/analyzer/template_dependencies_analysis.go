@@ -1,12 +1,12 @@
 package analyzer
 
 import (
-	// fmt"
 	"errors"
-	"github.com/pacer/gozer/internal/template/lexer"
-	"github.com/pacer/gozer/internal/template/parser"
 	"go/types"
 	"log"
+
+	"github.com/pacer/gozer/internal/template/lexer"
+	"github.com/pacer/gozer/internal/template/parser"
 )
 
 type ContainerTemplateDependencies struct {
@@ -24,10 +24,8 @@ func newContainerTemplateDependencies() *ContainerTemplateDependencies {
 	}
 }
 
-// Static VS Dynamics errors
-// Static Errors: errors within a file that are not affected by other files change within the workspace
-// Dynamics Errors: errors within a file that are affected by other files change within the workspace
-// NOTE: Static & Dynamics (errors) distinction is important because it determine how deep a file must be parser
+// ContainerFileAnalysisForDefinedTemplates holds static and dynamic errors for template analysis.
+// Static errors are not affected by other files; dynamic errors depend on workspace changes.
 type ContainerFileAnalysisForDefinedTemplates struct {
 	FileName    string
 	PartialFile *FileDefinition
@@ -37,7 +35,7 @@ type ContainerFileAnalysisForDefinedTemplates struct {
 }
 
 func (c ContainerFileAnalysisForDefinedTemplates) GetTemplateErrs() []lexer.Error {
-	var errs []lexer.Error
+	errs := make([]lexer.Error, 0, len(c.TemplateErrs))
 
 	for _, localErrs := range c.TemplateErrs {
 		errs = append(errs, localErrs...)
@@ -96,7 +94,6 @@ func NewWorkspaceTemplateManager() *WorkspaceTemplateManager {
 
 func (h *WorkspaceTemplateManager) RemoveTemplateScopeAssociatedToFileName(sourceFileName string) {
 	for templateScopeToDelete, targetFileName := range h.TemplateScopeToFileName {
-
 		if sourceFileName == targetFileName {
 			delete(h.TemplateScopeToDefinition, templateScopeToDelete)
 			delete(h.TemplateScopeToFileName, templateScopeToDelete)
@@ -106,8 +103,7 @@ func (h *WorkspaceTemplateManager) RemoveTemplateScopeAssociatedToFileName(sourc
 	}
 }
 
-// TODO:
-// func name: rebuildWorkspaceTemplateDefinition() ?
+// BuildWorkspaceTemplateDefinition builds template definitions for all files in the workspace.
 func (h *WorkspaceTemplateManager) BuildWorkspaceTemplateDefinition(parsedFilesInWorkspace map[string]*parser.GroupStatementNode) map[string]bool {
 	handler := NewTemplateBuilder(parsedFilesInWorkspace, h)
 
@@ -168,12 +164,9 @@ func (h *WorkspaceTemplateManager) BuildWorkspaceTemplateDefinition(parsedFilesI
 	// However, in local template definition, rebuilding the root template (file) is overkill
 	// We need a strategy that keep data concerning errors of 'root template' and 'childreen templates' associated to the same file
 	for fileName, root := range parsedFilesInWorkspace {
-
 		// Find all template call within the root file
 		for _, templateCall := range root.ShortCut.TemplateCallUsed {
-			templateNameCalled := string(templateCall.TemplateName.Value)
-
-			if nameOfTemplateModified[templateNameCalled] {
+			if nameOfTemplateModified[string(templateCall.TemplateName.Value)] {
 				handler.addFileAffected(fileName)
 			}
 		}
@@ -181,9 +174,7 @@ func (h *WorkspaceTemplateManager) BuildWorkspaceTemplateDefinition(parsedFilesI
 		// Find all template call within the templates defined in root file
 		for _, templateScope := range root.ShortCut.TemplateDefined {
 			for _, templateCall := range templateScope.ShortCut.TemplateCallUsed {
-				templateNameCalled := string(templateCall.TemplateName.Value)
-
-				if nameOfTemplateModified[templateNameCalled] {
+				if nameOfTemplateModified[string(templateCall.TemplateName.Value)] {
 					handler.addFileAffected(fileName)
 				}
 			}
@@ -253,7 +244,7 @@ func NewTemplateBuilder(parsedFilesInWorkspace map[string]*parser.GroupStatement
 	// Flush previous computation to rebuild from fresh
 	handler.templateManager.AnalyzedDefinedTemplatesWithinFile = make(map[string]ContainerFileAnalysisForDefinedTemplates)
 	handler.templateManager.TemplateDependencies = *newContainerTemplateDependencies()
-	//handler.templateManager.TemplateDependencies = ContainerTemplateDependencies{}
+	// handler.templateManager.TemplateDependencies = ContainerTemplateDependencies{}
 
 	// extract all template scope node from the root file
 	for fileName, root := range parsedFilesInWorkspace {
@@ -285,7 +276,6 @@ func NewTemplateBuilder(parsedFilesInWorkspace map[string]*parser.GroupStatement
 		localTemplateDefinition := make(map[string]*parser.GroupStatementNode)
 
 		for templateName, template := range root.ShortCut.TemplateDefined {
-
 			if !template.IsTemplate() {
 				log.Printf("expected a template but found something else\n"+
 					"GroupStatementNode = %s\n", template)
@@ -322,7 +312,6 @@ func NewTemplateBuilder(parsedFilesInWorkspace map[string]*parser.GroupStatement
 
 	// Build fileName collision dependencies with template name
 	for _, templatesWithSameName := range handler.multipleTemplateFromTemplateName {
-
 		for _, templateScope := range templatesWithSameName {
 			fileName := handler.TemplateToFileName[templateScope]
 
@@ -335,10 +324,8 @@ func NewTemplateBuilder(parsedFilesInWorkspace map[string]*parser.GroupStatement
 
 				handler.templateManager.TemplateDependencies.
 					fileNameWithCollidingTemplateName[fileName][collidingFileName] = true
-
 			}
 		}
-
 	}
 
 	// Delete analyzed file that are not in the workspace anymore
@@ -368,8 +355,8 @@ func NewTemplateBuilder(parsedFilesInWorkspace map[string]*parser.GroupStatement
 }
 
 func (h workspaceTemplateBuilder) FindTemplateWithinWorkspace(templateName string, rootOfTemplate *parser.GroupStatementNode) (*parser.GroupStatementNode, bool) {
-	var templateFound *parser.GroupStatementNode = nil
-	var isMultiple = false
+	var templateFound *parser.GroupStatementNode
+	var isMultiple bool
 
 	for template := range h.TemplateToFileName {
 		if templateName != template.TemplateName() {
@@ -500,7 +487,6 @@ func (h *workspaceTemplateBuilder) markCallPathAsCyclicalError(templateCollision
 
 		partialFile.CycleTemplateErrs = append(partialFile.CycleTemplateErrs, err)
 		h.templateManager.AnalyzedDefinedTemplatesWithinFile[fileName] = partialFile
-
 	} else {
 		// errMsg := errors.New("template call into infinite loop")
 		// errMsg := errors.New("template will enventually call itself")
@@ -553,7 +539,7 @@ func (h *workspaceTemplateBuilder) BuildTemplateDefinition(templateScope *parser
 	// END experimental
 
 	h.callPath[templateName] = true
-	h.increaseDepth(nil, nil, "") // nasty trick since 'defer' do not work withing 'for loop'
+	h.increaseDepth(nil, nil, "") // nasty trick since 'defer' do not work within 'for loop'
 
 	outterTemplates := make(map[*parser.GroupStatementNode]*TemplateDefinition)
 

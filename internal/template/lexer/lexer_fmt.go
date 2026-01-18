@@ -1,6 +1,9 @@
 package lexer
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func (e LexerError) String() string {
 	return fmt.Sprintf(`{ "Err": "%s", "Range": %s, "Token": %s }`, e.Err.Error(), e.Range, e.Token)
@@ -19,7 +22,7 @@ func (t Token) String() string {
 }
 
 func (k Kind) String() string {
-	str := "NOT FOUND ID"
+	var str string
 
 	switch k {
 	case DOT_VARIABLE:
@@ -71,19 +74,21 @@ func (k Kind) String() string {
 		panic(str)
 	}
 
-	return fmt.Sprintf(`%s`, str)
+	return str
 }
 
-// TODO: change name of this function -- array_to_string() ?
+// PrettyFormater converts an array of Stringer elements to a formatted string.
 func PrettyFormater[T fmt.Stringer](arr []T) string {
 	if len(arr) == 0 {
 		return "[]"
 	}
 
 	str := "["
+	var strSb84 strings.Builder
 	for _, el := range arr {
-		str += fmt.Sprintf("%s,", el)
+		strSb84.WriteString(fmt.Sprintf("%s,", el))
 	}
+	str += strSb84.String()
 
 	str = str[:len(str)-1]
 	str += "]"

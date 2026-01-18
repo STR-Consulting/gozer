@@ -13,5 +13,13 @@
 				}
 			}
 		}
+	},
+	"languages": {
+		"Markdown": {
+			"language_servers": ["!gopls"]
+		},
+		"JSONC": {
+			"language_servers": ["biome", "!gopls"]
+		}
 	}
 }
