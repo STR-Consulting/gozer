@@ -21,6 +21,29 @@ A Language Server Protocol (LSP) implementation for Go templates (`text/template
 | `.gotmpl`, `.go.tmpl`, `.gtpl`, `.tpl`, `.tmpl` | Go text templates |
 | `.gohtml`, `.go.html` | Go HTML templates |
 | `.html` | HTML (with template detection) |
+| `.htmx2.gohtml` | Go HTML templates with HTMX 2.x |
+| `.htmx4.gohtml` | Go HTML templates with HTMX 4.x |
+
+### HTMX Support
+
+The extension includes variants for [HTMX](https://htmx.org/) projects:
+
+- **Go HTML Template (HTMX 2)**: For HTMX 2.x projects (stable)
+- **Go HTML Template (HTMX 4)**: For HTMX 4.x projects (alpha, expected stable early-mid 2026)
+
+To enable HTMX support, either:
+
+1. **Use the file extension**: Name your files with `.htmx2.gohtml` or `.htmx4.gohtml`
+2. **Select manually**: Use Zed's language picker (click the language name in the status bar) to choose the HTMX variant
+3. **Configure in settings**: Add to your Zed `settings.json`:
+
+```json
+{
+  "file_types": {
+    "Go HTML Template (HTMX 2)": ["gohtml"]
+  }
+}
+```
 
 ## Installation
 
