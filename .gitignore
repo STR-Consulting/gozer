@@ -8,6 +8,8 @@
 
 # Test binary
 *.test
+*.wasm
+/zed-ext/target
 
 # Output
 *.out
