@@ -1,5 +1,6 @@
 # Gozer
 
+<img src="./docs/gozer.png" alt="Gozer gopher" style="float: right; width: 100px"/>
 A Language Server Protocol (LSP) implementation for Go templates (`text/template` and `html/template`), with a Zed editor extension.
 
 > [!NOTE]
