@@ -1,10 +1,11 @@
 ---
 # gozer-4kfl
 title: Fix all Go lint issues
-status: in-progress
+status: completed
 type: task
+priority: normal
 created_at: 2026-01-18T22:02:26Z
-updated_at: 2026-01-18T22:02:26Z
+updated_at: 2026-01-18T22:16:46Z
 ---
 
 Fix 76 golangci-lint issues across the codebase:

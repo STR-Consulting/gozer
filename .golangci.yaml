@@ -35,6 +35,23 @@ linters:
     - whitespace # leading/trailing whitespace
   settings:
     gocritic:
+      enabled-checks:
+        - sqlQuery
+        - boolExprSimplify
+        - deferUnlambda
+        - emptyFallthrough
+        - emptyStringTest
+        - nestingReduce
+        - paramTypeCombine
+        - ptrToRefParam
+        - stringConcatSimplify
+        - typeUnparen
+        - appendCombine
+        - hugeParam
+        - preferFprint
+        - preferStringWriter
+        - rangeExprCopy
+        - sliceClear
       disabled-checks:
         - ifElseChain
 
