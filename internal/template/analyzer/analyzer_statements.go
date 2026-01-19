@@ -291,7 +291,11 @@ func definitionAnalysisGroupStatement(
 		// Create a separate $ definition so type inference on . doesn't affect $.
 		// In Go templates, $ refers to the root data and should maintain type=any
 		// so that $.Field accesses work without "field not found" errors.
-		localVariables["$"] = NewVariableDefinition("$", node, node.Parent(), file.name)
+		// Store in both maps: localVariables for current scope, scopedGlobalVariables
+		// so nested range/with blocks can find it via scopedGlobalVariables["$"].
+		dollarDef := NewVariableDefinition("$", node, node.Parent(), file.name)
+		scopedGlobalVariables["$"] = dollarDef
+		localVariables["$"] = dollarDef
 
 		markVariableAsUsed(localVariables["."])
 

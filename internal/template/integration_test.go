@@ -569,6 +569,10 @@ func TestDollarVariableInRangeBlock(t *testing.T) {
 			name:   "dollar as function arg in define",
 			source: `{{define "test"}}{{localcron .Job.Schedule .Job.TimeZone $.Location}}{{end}}`,
 		},
+		{
+			name:   "dollar in dict call inside range in define",
+			source: `{{define "job-list"}}{{range .JobList}}{{template "job-summary" dict "Job" . "Location" $.Location}}{{end}}{{end}}`,
+		},
 	}
 
 	forbiddenErrors := []string{
