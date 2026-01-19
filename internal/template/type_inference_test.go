@@ -2,6 +2,7 @@ package template_test
 
 import (
 	"go/types"
+	"strings"
 	"testing"
 
 	"github.com/pacer/gozer/internal/template"
@@ -194,7 +195,120 @@ func TestPartialStructTypeInference(t *testing.T) {
 }
 
 // =============================================================================
-// Improvement 3: Type Inference from Comparisons
+// Improvement 3: Assignment Target Type Propagation
+// =============================================================================
+
+// TestAssignmentTargetTypePropagation verifies that when assigning an any-typed
+// expression to a variable with a concrete type, the type system should either:
+// 1. Accept the assignment (since any can be assigned to concrete types), OR
+// 2. Propagate the constraint type from the variable to infer the expression's type
+//
+// This test reproduces the bug where `$current := ""` followed by
+// `$current = .Integration.Platform` produces a false positive type mismatch error.
+func TestAssignmentTargetTypePropagation(t *testing.T) {
+	tests := []struct {
+		name            string
+		source          string
+		expectNoErrors  bool
+		forbiddenErrors []string
+	}{
+		{
+			name: "assign any to string variable - field access",
+			source: `{{define "test"}}
+{{$current := ""}}
+{{if .Integration}}{{$current = .Integration.Platform}}{{end}}
+{{$current}}
+{{end}}`,
+			expectNoErrors:  true,
+			forbiddenErrors: []string{"type mismatch"},
+		},
+		{
+			name: "assign any to int variable",
+			source: `{{define "test"}}
+{{$count := 0}}
+{{if .Data}}{{$count = .Data.Total}}{{end}}
+{{$count}}
+{{end}}`,
+			expectNoErrors:  true,
+			forbiddenErrors: []string{"type mismatch"},
+		},
+		{
+			name: "assign any to bool variable",
+			source: `{{define "test"}}
+{{$enabled := false}}
+{{if .Settings}}{{$enabled = .Settings.IsEnabled}}{{end}}
+{{$enabled}}
+{{end}}`,
+			expectNoErrors:  true,
+			forbiddenErrors: []string{"type mismatch"},
+		},
+		{
+			name: "assign string literal to any variable - should work",
+			source: `{{define "test"}}
+{{$current := .Unknown}}
+{{$current = "default"}}
+{{$current}}
+{{end}}`,
+			expectNoErrors: true,
+		},
+		{
+			name: "type mismatch with concrete types should still error",
+			source: `{{/* go:code
+type Input struct {
+	Count int
+}
+*/}}
+{{define "test"}}
+{{$str := ""}}
+{{$str = .Count}}
+{{end}}`,
+			expectNoErrors:  false, // This SHOULD error - int cannot be assigned to string
+			forbiddenErrors: []string{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			root, parseErrs := template.ParseSingleFile([]byte(tt.source))
+			if len(parseErrs) > 0 {
+				t.Fatalf("parse errors: %v", parseErrs)
+			}
+
+			workspace := map[string]*parser.GroupStatementNode{
+				"test.html": root,
+			}
+			results := template.DefinitionAnalysisWithinWorkspace(workspace)
+
+			// Collect and check errors
+			hasErrors := false
+			for _, result := range results {
+				for _, err := range result.Errs {
+					hasErrors = true
+					errMsg := err.GetError()
+
+					if tt.expectNoErrors {
+						t.Errorf("expected no errors but got: %s", errMsg)
+					}
+
+					for _, forbidden := range tt.forbiddenErrors {
+						if strings.Contains(errMsg, forbidden) {
+							t.Errorf(
+								"unexpected error containing %q: %s",
+								forbidden,
+								errMsg,
+							)
+						}
+					}
+				}
+			}
+
+			_ = hasErrors // may be unused if expectNoErrors is false
+		})
+	}
+}
+
+// =============================================================================
+// Improvement 4: Type Inference from Comparisons
 // =============================================================================
 
 // TestComparisonTypeInference verifies that comparing a variable to a literal

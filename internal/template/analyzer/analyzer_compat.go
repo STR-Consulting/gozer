@@ -16,6 +16,14 @@ func TypeCheckAgainstConstraint(
 		return candidateType, nil
 	}
 
+	// When candidateType is any (unknown), allow assignment to any concrete type.
+	// In Go templates, type checking for any-typed values happens at runtime.
+	// This avoids false positive "type mismatch" errors when assigning fields
+	// from untyped data (e.g., $current = .Integration.Platform where Platform is any).
+	if types.Identical(candidateType, typeAny.Type()) {
+		return constraintType, nil
+	}
+
 	switch receiver := constraintType.(type) {
 	case *types.TypeParam:
 		it, ok := receiver.Constraint().Underlying().(*types.Interface)
