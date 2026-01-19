@@ -6,24 +6,6 @@ echo "==> Running pre-commit checks..."
 golangci-lint run
 go test ./...
 
-# Update zed-ext version files if NEW_VERSION is set
-if [ -n "$NEW_VERSION" ]; then
-    # Strip 'v' prefix (e.g., v0.1.2 -> 0.1.2)
-    EXT_VERSION="${NEW_VERSION#v}"
-
-    EXTENSION_TOML="zed-ext/extension.toml"
-    if [ -f "$EXTENSION_TOML" ]; then
-        echo "==> Updating $EXTENSION_TOML version to $EXT_VERSION..."
-        sed -i '' "s/^version = \".*\"/version = \"$EXT_VERSION\"/" "$EXTENSION_TOML"
-    fi
-
-    CARGO_TOML="zed-ext/Cargo.toml"
-    if [ -f "$CARGO_TOML" ]; then
-        echo "==> Updating $CARGO_TOML version to $EXT_VERSION..."
-        sed -i '' "s/^version = \".*\"/version = \"$EXT_VERSION\"/" "$CARGO_TOML"
-    fi
-fi
-
 # Stage and show changes
 echo "==> Staging changes..."
 git add -A
@@ -67,18 +49,44 @@ if [ -n "$CURRENT_TAG" ]; then
         echo "==> Pushing commits..."
         git push
 
-        # If NEW_VERSION is set, create and push tag
-        # GoReleaser workflow will create the GitHub release automatically
-        if [ -n "$NEW_VERSION" ]; then
-            echo "==> Creating tag $NEW_VERSION..."
-            git tag -a "$NEW_VERSION" -m "Release $NEW_VERSION"
-
-            echo "==> Pushing tag (GoReleaser will create release)..."
-            git push origin "$NEW_VERSION"
-            echo "==> Tag $NEW_VERSION pushed, GoReleaser workflow will create release"
-        else
-            echo "==> No NEW_VERSION set, skipping release"
+        # Auto-bump patch version if NEW_VERSION not explicitly set
+        if [ -z "$NEW_VERSION" ]; then
+            # Parse current version (e.g., v0.6.0 -> 0 6 0)
+            VERSION_NUMS=$(echo "$CURRENT_TAG" | sed 's/^v//' | tr '.' ' ')
+            MAJOR=$(echo "$VERSION_NUMS" | awk '{print $1}')
+            MINOR=$(echo "$VERSION_NUMS" | awk '{print $2}')
+            PATCH=$(echo "$VERSION_NUMS" | awk '{print $3}')
+            NEW_VERSION="v${MAJOR}.${MINOR}.$((PATCH + 1))"
+            echo "==> Auto-bumping patch version: $CURRENT_TAG -> $NEW_VERSION"
         fi
+
+        # Update zed-ext version files with the new version
+        EXT_VERSION="${NEW_VERSION#v}"
+        EXTENSION_TOML="zed-ext/extension.toml"
+        if [ -f "$EXTENSION_TOML" ]; then
+            echo "==> Updating $EXTENSION_TOML version to $EXT_VERSION..."
+            sed -i '' "s/^version = \".*\"/version = \"$EXT_VERSION\"/" "$EXTENSION_TOML"
+            git add "$EXTENSION_TOML"
+        fi
+        CARGO_TOML="zed-ext/Cargo.toml"
+        if [ -f "$CARGO_TOML" ]; then
+            echo "==> Updating $CARGO_TOML version to $EXT_VERSION..."
+            sed -i '' "s/^version = \".*\"/version = \"$EXT_VERSION\"/" "$CARGO_TOML"
+            git add "$CARGO_TOML"
+        fi
+        # Amend commit if version files were updated
+        if [ -n "$(git diff --staged --name-only)" ]; then
+            echo "==> Amending commit with version file updates..."
+            git commit --amend --no-edit
+            git push --force-with-lease
+        fi
+
+        echo "==> Creating tag $NEW_VERSION..."
+        git tag -a "$NEW_VERSION" -m "Release $NEW_VERSION"
+
+        echo "==> Pushing tag (GoReleaser will create release)..."
+        git push origin "$NEW_VERSION"
+        echo "==> Tag $NEW_VERSION pushed, GoReleaser workflow will create release"
     else
         echo "==> Commit is local only (use PUSH=true to push and release)"
         if [ -n "$NEW_VERSION" ]; then
