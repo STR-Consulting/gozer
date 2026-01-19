@@ -104,7 +104,17 @@ func FindSourceDefinitionFromPosition(
 		}
 
 		if len(fields) == 1 {
-			singleDefinition := []NodeDefinition{symbolDefinition}
+			// Create a new definition with the correct range at the cursor position
+			// (not the original definition's range)
+			cursorDef := NewVariableDefinition(
+				symbolDefinition.Name(),
+				symbolDefinition.Node(),
+				seeker.LastParent,
+				symbolDefinition.FileName(),
+			)
+			cursorDef.typ = symbolDefinition.Type()
+			cursorDef.rng = seeker.TokenFound.Range
+			singleDefinition := []NodeDefinition{cursorDef}
 			return singleDefinition
 		}
 
@@ -158,18 +168,6 @@ func FindSourceDefinitionFromPosition(
 		variableDef.typ = typ
 
 		variableDef.rng = newToken.Range
-
-		varDef, ok := symbolDefinition.(*VariableDefinition)
-		if ok && varDef.TreeImplicitType != nil {
-			reach := getVariableImplicitRange(varDef, newToken)
-			if reach != nil {
-				variableDef.rng = *reach
-			}
-		}
-
-		if fieldIndex == 0 {
-			variableDef.rng = symbolDefinition.Range()
-		}
 
 		singleDefinition := []NodeDefinition{variableDef}
 

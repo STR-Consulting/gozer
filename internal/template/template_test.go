@@ -625,3 +625,88 @@ func TestParseFilesInWorkspace_LargeWorkspace(t *testing.T) {
 		t.Errorf("Expected no errors, got %d: %v", len(errs), errs)
 	}
 }
+
+// TestHover_MultipleInstancesSameLine verifies that when hovering over a variable
+// that appears multiple times on the same line, the hover range corresponds to
+// the instance under the cursor, not the first instance.
+func TestHover_MultipleInstancesSameLine(t *testing.T) {
+	// Template with .Field appearing 3 times on one line:
+	// Position 0:  {{if .Field}}{{.Field}} items{{if gt .Field 1}}s{{end}}{{end}}
+	//                   ^^^^^^^     ^^^^^^              ^^^^^^
+	//                   first       second              third
+	// First .Field:  starts at char 5
+	// Second .Field: starts at char 15
+	// Third .Field:  starts at char 37
+	source := `{{if .Field}}{{.Field}} items{{if gt .Field 1}}s{{end}}{{end}}`
+
+	root, parseErrs := template.ParseSingleFile([]byte(source))
+	if len(parseErrs) != 0 {
+		t.Fatalf("Parse errors: %v", parseErrs)
+	}
+
+	workspace := map[string]*parser.GroupStatementNode{
+		"test.html": root,
+	}
+
+	file, _ := template.DefinitionAnalysisSingleFile("test.html", workspace)
+	if file == nil {
+		t.Fatal("Expected non-nil file definition")
+	}
+
+	// Test hovering over each instance of .Field
+	testCases := []struct {
+		name        string
+		pos         lexer.Position
+		expectedMin int // minimum character position of the hover range start
+		expectedMax int // maximum character position of the hover range start
+	}{
+		{
+			name:        "first .Field",
+			pos:         lexer.Position{Line: 0, Character: 7}, // middle of first .Field
+			expectedMin: 5,
+			expectedMax: 5,
+		},
+		{
+			name: "second .Field",
+			pos: lexer.Position{
+				Line:      0,
+				Character: 17,
+			}, // middle of second .Field
+			expectedMin: 15,
+			expectedMax: 15,
+		},
+		{
+			name:        "third .Field",
+			pos:         lexer.Position{Line: 0, Character: 39}, // middle of third .Field
+			expectedMin: 37,
+			expectedMax: 37,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			_, hoverRange := template.Hover(file, tc.pos)
+
+			if hoverRange.IsEmpty() {
+				t.Fatalf(
+					"Expected non-empty hover range for %s at position %v",
+					tc.name,
+					tc.pos,
+				)
+			}
+
+			// The hover range should start near where the cursor is, not at the first instance
+			if hoverRange.Start.Character < tc.expectedMin ||
+				hoverRange.Start.Character > tc.expectedMax {
+				t.Errorf(
+					"Hover range for %s should start between chars %d-%d, but got char %d (range: %v)",
+					tc.name,
+					tc.expectedMin,
+					tc.expectedMax,
+					hoverRange.Start.Character,
+					hoverRange,
+				)
+			}
+		})
+	}
+}

@@ -9,7 +9,7 @@ HTML linter written in Go. Validates HTML for accessibility, best practices, and
 ## Guidelines
 
 - Be concise
-- Run `golangci-lint run` after modifying Go code
+- Run `golangci-lint run --fix` after modifying Go code
 - Run `go test ./...` after changes
 - **NEVER commit without explicit user request**
 - Use external test packages (`package foo_test`)

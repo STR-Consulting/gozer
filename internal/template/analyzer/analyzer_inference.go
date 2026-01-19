@@ -568,49 +568,6 @@ func markVariableAsUsed(varDef *VariableDefinition) {
 	varDef.IsUsedOnce = true
 }
 
-func getVariableImplicitRange(
-	varDef *VariableDefinition,
-	symbol *lexer.Token,
-) *lexer.Range {
-	if symbol == nil {
-		log.Printf(
-			"cannot set implicit type of not existing symbol.\n varDef = %#v",
-			varDef,
-		)
-		panic("cannot set implicit type of not existing symbol")
-	}
-
-	if varDef == nil {
-		return nil
-	}
-
-	if varDef.TreeImplicitType == nil {
-		return nil
-	}
-
-	currentNode := varDef.TreeImplicitType
-
-	fields, _, _, err := splitVariableNameFields(symbol)
-
-	_ = err
-
-	// NOTE: I decide to not validate the fields[0] on purpose
-	// For the reason, look at note within 'getVariableImplicitType()' function
-
-	for index := 1; index < len(fields); index++ {
-		fieldName := fields[index]
-
-		childNode, ok := currentNode.children[fieldName]
-		if !ok {
-			return &currentNode.rng
-		}
-
-		currentNode = childNode
-	}
-
-	return &currentNode.rng
-}
-
 // updateVariableImplicitType updates the inferred type tree for a variable based on
 // usage context. Only applies when the variable's declared type is 'any'.
 func updateVariableImplicitType(
