@@ -1,6 +1,24 @@
 {
   "version": 1,
   "beans": {
+    "gozer-06x6": {
+      "clickup": {
+        "task_id": "868h4m2th",
+        "synced_at": "2026-01-19T00:59:55.78459Z"
+      }
+    },
+    "gozer-0o0x": {
+      "clickup": {
+        "task_id": "868h4m2tb",
+        "synced_at": "2026-01-19T00:59:55.415207Z"
+      }
+    },
+    "gozer-2jbh": {
+      "clickup": {
+        "task_id": "868h4m2t3",
+        "synced_at": "2026-01-19T00:59:55.304054Z"
+      }
+    },
     "gozer-3ce4": {
       "clickup": {
         "task_id": "868h4jzpx",
@@ -34,7 +52,13 @@
     "gozer-6c4m": {
       "clickup": {
         "task_id": "868h4kmau",
-        "synced_at": "2026-01-18T22:45:51.313202Z"
+        "synced_at": "2026-01-19T00:59:59.061638Z"
+      }
+    },
+    "gozer-8zde": {
+      "clickup": {
+        "task_id": "868h4m2t7",
+        "synced_at": "2026-01-19T00:59:55.230359Z"
       }
     },
     "gozer-9bu9": {
@@ -47,6 +71,12 @@
       "clickup": {
         "task_id": "868h4jxx6",
         "synced_at": "2026-01-18T18:42:27.361685Z"
+      }
+    },
+    "gozer-9xrj": {
+      "clickup": {
+        "task_id": "868h4m2t9",
+        "synced_at": "2026-01-19T00:59:55.444736Z"
       }
     },
     "gozer-a5sa": {
@@ -76,19 +106,25 @@
     "gozer-cch3": {
       "clickup": {
         "task_id": "868h4kmb2",
-        "synced_at": "2026-01-18T22:45:51.515141Z"
+        "synced_at": "2026-01-19T00:59:59.07726Z"
       }
     },
     "gozer-ccyf": {
       "clickup": {
         "task_id": "868h4k3wd",
-        "synced_at": "2026-01-18T19:46:04.225411Z"
+        "synced_at": "2026-01-19T00:59:58.727213Z"
+      }
+    },
+    "gozer-dxhp": {
+      "clickup": {
+        "task_id": "868h4m2t2",
+        "synced_at": "2026-01-19T00:59:55.210607Z"
       }
     },
     "gozer-eik8": {
       "clickup": {
         "task_id": "868h4kjbx",
-        "synced_at": "2026-01-18T22:16:36.951571Z"
+        "synced_at": "2026-01-19T00:59:58.797506Z"
       }
     },
     "gozer-ewcb": {
@@ -97,16 +133,40 @@
         "synced_at": "2026-01-18T23:55:23.711369Z"
       }
     },
+    "gozer-g7gc": {
+      "clickup": {
+        "task_id": "868h4m2tc",
+        "synced_at": "2026-01-19T00:59:55.467841Z"
+      }
+    },
+    "gozer-hcs9": {
+      "clickup": {
+        "task_id": "868h4m2t8",
+        "synced_at": "2026-01-19T00:59:55.357947Z"
+      }
+    },
     "gozer-iynv": {
       "clickup": {
         "task_id": "868h4jx7w",
         "synced_at": "2026-01-18T18:31:41.496634Z"
       }
     },
+    "gozer-kbqm": {
+      "clickup": {
+        "task_id": "868h4m2t5",
+        "synced_at": "2026-01-19T00:59:55.372855Z"
+      }
+    },
     "gozer-kiuk": {
       "clickup": {
         "task_id": "868h4kmax",
-        "synced_at": "2026-01-18T22:45:51.143933Z"
+        "synced_at": "2026-01-19T00:59:58.802182Z"
+      }
+    },
+    "gozer-mgc0": {
+      "clickup": {
+        "task_id": "868h4m2te",
+        "synced_at": "2026-01-19T00:59:55.618083Z"
       }
     },
     "gozer-miqk": {
@@ -118,7 +178,7 @@
     "gozer-mnk7": {
       "clickup": {
         "task_id": "868h4kmap",
-        "synced_at": "2026-01-18T22:45:50.944609Z"
+        "synced_at": "2026-01-19T00:59:58.743951Z"
       }
     },
     "gozer-n7nr": {
@@ -130,31 +190,43 @@
     "gozer-nsqa": {
       "clickup": {
         "task_id": "868h4kjbt",
-        "synced_at": "2026-01-18T22:16:36.725339Z"
+        "synced_at": "2026-01-19T00:59:58.9766Z"
       }
     },
     "gozer-phm9": {
       "clickup": {
         "task_id": "868h4kmav",
-        "synced_at": "2026-01-18T22:45:51.057464Z"
+        "synced_at": "2026-01-19T00:59:58.713755Z"
+      }
+    },
+    "gozer-pus8": {
+      "clickup": {
+        "task_id": "868h4m2t4",
+        "synced_at": "2026-01-19T00:59:55.376768Z"
+      }
+    },
+    "gozer-puv0": {
+      "clickup": {
+        "task_id": "868h4m2ta",
+        "synced_at": "2026-01-19T00:59:55.382359Z"
       }
     },
     "gozer-q90j": {
       "clickup": {
         "task_id": "868h4kjbr",
-        "synced_at": "2026-01-18T22:16:36.987455Z"
+        "synced_at": "2026-01-19T00:59:58.648668Z"
       }
     },
     "gozer-r2ui": {
       "clickup": {
         "task_id": "868h4kmb1",
-        "synced_at": "2026-01-18T22:45:51.159642Z"
+        "synced_at": "2026-01-19T00:59:58.993654Z"
       }
     },
     "gozer-reeh": {
       "clickup": {
         "task_id": "868h4kmay",
-        "synced_at": "2026-01-18T22:45:51.521548Z"
+        "synced_at": "2026-01-19T00:59:58.792312Z"
       }
     },
     "gozer-sezg": {
@@ -166,7 +238,7 @@
     "gozer-ta6v": {
       "clickup": {
         "task_id": "868h4kmar",
-        "synced_at": "2026-01-18T22:45:50.99314Z"
+        "synced_at": "2026-01-19T00:59:59.262695Z"
       }
     },
     "gozer-txnj": {
@@ -178,7 +250,7 @@
     "gozer-u8gb": {
       "clickup": {
         "task_id": "868h4kmb0",
-        "synced_at": "2026-01-18T22:45:51.173317Z"
+        "synced_at": "2026-01-19T00:59:58.677536Z"
       }
     },
     "gozer-ui8o": {
@@ -190,19 +262,43 @@
     "gozer-wsnw": {
       "clickup": {
         "task_id": "868h4kmat",
-        "synced_at": "2026-01-18T22:45:51.048289Z"
+        "synced_at": "2026-01-19T00:59:58.634308Z"
+      }
+    },
+    "gozer-wz3v": {
+      "clickup": {
+        "task_id": "868h4m2t6",
+        "synced_at": "2026-01-19T00:59:55.23498Z"
+      }
+    },
+    "gozer-x69k": {
+      "clickup": {
+        "task_id": "868h4m2tf",
+        "synced_at": "2026-01-19T00:59:55.585531Z"
+      }
+    },
+    "gozer-xge8": {
+      "clickup": {
+        "task_id": "868h4m2tg",
+        "synced_at": "2026-01-19T00:59:55.697194Z"
       }
     },
     "gozer-xlx0": {
       "clickup": {
         "task_id": "868h4kmaw",
-        "synced_at": "2026-01-18T22:45:51.267246Z"
+        "synced_at": "2026-01-19T00:59:59.869122Z"
+      }
+    },
+    "gozer-y8wz": {
+      "clickup": {
+        "task_id": "868h4m2td",
+        "synced_at": "2026-01-19T00:59:55.423807Z"
       }
     },
     "gozer-zkdy": {
       "clickup": {
         "task_id": "868h4kmaq",
-        "synced_at": "2026-01-18T22:45:50.985429Z"
+        "synced_at": "2026-01-19T00:59:59.058698Z"
       }
     },
     "gozer-zm6p": {
