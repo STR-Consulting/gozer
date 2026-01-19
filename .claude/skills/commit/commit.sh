@@ -40,14 +40,18 @@ git commit -m "$COMMIT_MSG"
 git status
 
 # Version tagging and release (only if PUSH=true)
-CURRENT_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-if [ -n "$CURRENT_TAG" ]; then
+if [ "$PUSH" = "true" ]; then
+    # Fetch remote tags to ensure we have the latest version info
     echo ""
-    echo "==> Current version: $CURRENT_TAG"
+    echo "==> Fetching remote tags..."
+    git fetch --tags
 
-    if [ "$PUSH" = "true" ]; then
-        echo "==> Pushing commits..."
-        git push
+    echo "==> Pushing commits..."
+    git push
+
+    CURRENT_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+    if [ -n "$CURRENT_TAG" ]; then
+        echo "==> Current version: $CURRENT_TAG"
 
         # Auto-bump patch version if NEW_VERSION not explicitly set
         if [ -z "$NEW_VERSION" ]; then
@@ -57,6 +61,13 @@ if [ -n "$CURRENT_TAG" ]; then
             MINOR=$(echo "$VERSION_NUMS" | awk '{print $2}')
             PATCH=$(echo "$VERSION_NUMS" | awk '{print $3}')
             NEW_VERSION="v${MAJOR}.${MINOR}.$((PATCH + 1))"
+
+            # Check if this version already exists, keep bumping if so
+            while git rev-parse "$NEW_VERSION" >/dev/null 2>&1; do
+                echo "==> Version $NEW_VERSION already exists, bumping again..."
+                PATCH=$((PATCH + 1))
+                NEW_VERSION="v${MAJOR}.${MINOR}.$((PATCH + 1))"
+            done
             echo "==> Auto-bumping patch version: $CURRENT_TAG -> $NEW_VERSION"
         fi
 
@@ -88,17 +99,10 @@ if [ -n "$CURRENT_TAG" ]; then
         git push origin "$NEW_VERSION"
         echo "==> Tag $NEW_VERSION pushed, GoReleaser workflow will create release"
     else
-        echo "==> Commit is local only (use PUSH=true to push and release)"
-        if [ -n "$NEW_VERSION" ]; then
-            echo "==> NEW_VERSION=$NEW_VERSION will be used when pushed"
-        fi
+        echo "==> No existing tags, skipping version bump"
     fi
 else
-    echo "==> No existing tags, skipping version bump"
-    if [ "$PUSH" = "true" ]; then
-        echo "==> Pushing commits..."
-        git push
-    fi
+    echo "==> Commit is local only (use PUSH=true to push and release)"
 fi
 
 # Sync to ClickUp
