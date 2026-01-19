@@ -573,12 +573,26 @@ func TestDollarVariableInRangeBlock(t *testing.T) {
 			name:   "dollar in dict call inside range in define",
 			source: `{{define "job-list"}}{{range .JobList}}{{template "job-summary" dict "Job" . "Location" $.Location}}{{end}}{{end}}`,
 		},
+		// Templates that don't use $ should not produce "variable is never used" for the implicit $ variable
+		{
+			name:   "define without dollar usage",
+			source: `{{define "test"}}<div>{{.Name}}</div>{{end}}`,
+		},
+		{
+			name:   "define with range without dollar usage",
+			source: `{{define "list"}}{{range .Items}}<li>{{.Name}}</li>{{end}}{{end}}`,
+		},
+		{
+			name:   "root template without dollar usage",
+			source: `<div>{{.Title}}</div>`,
+		},
 	}
 
 	forbiddenErrors := []string{
 		"invalid type",
 		"field or method not found",
 		"variable undefined",
+		"variable is never used", // $ is implicit and should never trigger this
 	}
 
 	for _, tt := range tests {
