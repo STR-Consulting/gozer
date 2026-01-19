@@ -298,6 +298,7 @@ func definitionAnalysisGroupStatement(
 		localVariables["$"] = dollarDef
 
 		markVariableAsUsed(localVariables["."])
+		markVariableAsUsed(dollarDef) // $ is an implicit built-in, always considered used
 
 		commentGoCode := node.ShortCut.CommentGoCode
 		if commentGoCode != nil {
