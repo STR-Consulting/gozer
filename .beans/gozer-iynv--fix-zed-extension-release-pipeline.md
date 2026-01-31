@@ -10,7 +10,7 @@ updated_at: 2026-01-18T18:30:49Z
 
 The Zed extension fails with 404 because:
 1. No GitHub Actions workflow exists to run goreleaser
-2. lib.rs references wrong repo (pacer/gozer instead of STR-Consulting/gozer)
+2. lib.rs references wrong repo (pacer/gozer instead of toba/gozer)
 
 ## Checklist
 - [x] Create .github/workflows/release.yml

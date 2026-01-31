@@ -15,7 +15,7 @@ Split the monorepo into:
 
 ### go-template-lsp repo setup
 - [x] Create new directory at ../go-template-lsp
-- [x] Copy go.mod and update module path to github.com/STR-Consulting/go-template-lsp
+- [x] Copy go.mod and update module path to github.com/toba/go-template-lsp
 - [x] Copy go.sum
 - [x] Copy cmd/ and internal/ directories
 - [x] Copy .goreleaser.yaml and update repo references
@@ -31,7 +31,7 @@ Split the monorepo into:
 ### gozer repo (Zed extension)
 - [x] Move zed-ext/* contents to root
 - [x] Delete empty zed-ext/ directory
-- [x] Update src/lib.rs: change GitHub release URL to STR-Consulting/go-template-lsp
+- [x] Update src/lib.rs: change GitHub release URL to toba/go-template-lsp
 - [x] Update README.md for Zed extension focus
 - [x] Update CLAUDE.md for extension development
 - [x] Remove Go-related files (cmd/, internal/, go.mod, go.sum, .goreleaser.yaml, .golangci.yaml, mise.toml, .github/workflows/release.yml)
